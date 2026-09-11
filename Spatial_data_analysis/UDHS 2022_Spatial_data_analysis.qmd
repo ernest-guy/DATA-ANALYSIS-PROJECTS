@@ -1,0 +1,92 @@
+---
+title: "Spatial data analysis in R"
+author: "AGABA ERNEST"
+format: html
+editor: visual
+---
+
+## Introduction
+
+Spatial data refers to geographic information used to describe the location, shape, and physical characteristics of features on the Earth’s surface. spatial data is defined as data that contains positional values, such as coordinates (x, y).
+
+$Spatial data=Information + Location$
+
+```{r}
+# Loading libraries
+library(sf)
+library(ggplot2)
+library(readxl)
+library(dplyr)
+library(ggthemes)
+library(plotly)
+```
+
+#### Loading the shape file.
+
+```{r}
+# loading the shape files and data
+ug_regions <- st_read("uga_admin2.shp")
+
+spatial_assign <- read_excel("spatial_assign.xlsx")
+
+district_data <- left_join(ug_regions,spatial_assign, by=c("adm2_name"="District"))
+
+```
+
+### The exciting part
+
+#### 1. Map showing Female headed families in Uganda
+
+```{r}
+# Plotting the map of districts without data
+# For continuous data use scale_fill_brewer()
+district_data %>% ggplot()+
+  geom_sf(aes(fill=Female_headed), color ="white", size = 0.1)+
+  labs(title = "Map showing Female headed families in Uganda")+
+  scale_fill_distiller(palette = "Purples", direction = 1)+
+  theme_hc()
+
+```
+
+#### 2. Map showing Male headed families in Uganda
+
+```{r}
+district_data %>% ggplot()+
+  geom_sf(aes(fill=Male_headed), color ="white", size = 0.1)+
+  labs(title = "Map showing Male headed families in Uganda")+
+  scale_fill_distiller(palette = "Blues", direction = 1)+
+  theme_hc()
+
+
+```
+
+#### 3. Map showing percentage of not poor families in Uganda
+
+```{r}
+district_data %>% ggplot()+
+  geom_sf(aes(fill=`Not Poor`), color ="white", size = 0.1)+
+  labs(title = "Map showing percentage of not poor families in Uganda")+
+  scale_fill_distiller(palette = "YlOrBr", direction = 1)+
+  theme_hc()
+
+```
+
+#### 4. Map showing percentage of Poor families in Uganda
+
+```{r}
+district_data %>% ggplot()+
+  geom_sf(aes(fill=`Poor`), color ="white", size = 0.1)+
+  labs(title = "Map showing percentage of Poor families in Uganda")+
+  scale_fill_distiller(palette = "YlGnBu", direction = 1)+
+  theme_hc() -> a
+a
+
+```
+
+<!--# It's about to get more exciting. Be warned -->
+
+#### Adding interactiveness
+
+```{r}
+ggplotly(a)
+```
